@@ -11,12 +11,18 @@ int main() {
 	//idfk
 	Hash<int, 11> *table;
 	table = new Hash_LinearProbing<int, 11>;
-	table->insert(1);
-	table->insert(2);
+	//fill table to max capacity
+	for (int i = 0; i < 11; i++) {
+		table->insert(i);
+	}
 	table->print();
-	table->insert(3);
-	table->insert(4);
 
+	//search for 1st, middle, last element
+	table->search(0);
+	table->search(5);
+	table->search(10);
 
+	//try to insert another element
+	table->insert(11);
 	return 0;
 }
