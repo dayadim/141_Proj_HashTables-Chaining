@@ -1,7 +1,7 @@
 #include <vector>
 #include <list>
 #include <functional>
-#include "read.h"
+#include "old/read.h"
 #include <set>
 
 const bool DEBUG = true;
@@ -144,7 +144,7 @@ class LinearProbingHash : public Hash<T,SIZE> {
 		
 		size_t counter = 0;
 		// might need to change this to match the other hash functions but idk
-		auto address = old_data % SIZE;
+		size_t address = std::hash<T>{}(old_data) % SIZE;
 		while (status.at(address) == STATUS::FILLED and counter <= SIZE) {
 			//std::cerr << "looking for change\n";
 			if (data.at(address) == old_data) {
