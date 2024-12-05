@@ -16,6 +16,10 @@ template <class T, size_t SIZE> class Hash {
 		virtual ~Hash() {}
 		virtual void insert(T new_data) = 0;
 		virtual bool search(T test_data) = 0;
+		
+		//new
+		virtual void print() = 0;
+		//virtual void stats() = 0;
 };
 
 

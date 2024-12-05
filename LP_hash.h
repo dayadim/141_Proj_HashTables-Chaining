@@ -101,6 +101,20 @@ public:
 		}
 		return false;
 	}
+
+	void print() {
+		std::cout << "Printing table:\n";
+		int counter = 0;
+		for (size_t i = 0; i < SIZE; i++) {
+			std::cout << data.at(i) << " ";
+			std::cout << status.at(i) << ", ";
+			counter++;
+			if (counter == 15) {
+				std::cout << "\n";
+				counter = 0;
+			}
+		}
+	}
 };
 
 #endif
