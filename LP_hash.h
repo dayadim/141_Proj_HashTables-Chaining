@@ -36,40 +36,33 @@ public:
 		//runaway counter (to not loop more than SIZE)
 		size_t counter = 0;
 	
-		//while the bucket is filled
-		//i think the counter check in the while loop might be redundant
-		while (status.at(addr) == STATUS::FILLED and counter <= SIZE) {
+		//only iterate once through the entire table.
+		while (counter <= SIZE) {
 			// if this unique data already exists in the correct spot
-			if (data.at(addr) == new_data) {
+			if (status.at(addr) == STATUS::FILLED && data.at(addr) == new_data) {
 				if (DEBUG) { std::cerr << "(-) not inserted. Dupe?\n";}
+				return;
+			}
+
+			// this should fail only if the table is full
+			//if the bucket is open, add it and mark as filled
+			if (status.at(addr) == STATUS::OPEN) {
+				data.at(addr) = new_data;
+				status.at(addr) = STATUS::FILLED;
+				if (DEBUG) std::cerr << "(+) inserted\n";
 				return;
 			}
 
 			// this is where the linear probing happens
 			// otherwise, move to the next bucket
 			addr = (addr + 1) % SIZE;
-
-			if (counter >= SIZE) {
-				std::cerr << "(-) not inserted\n";
-				return;
-			}
+			counter++;
 		}
 
-		// this should fail only if the table is full
-		try {
-			//if the bucket is open, add it and mark as filled
-			if (status.at(addr) == STATUS::OPEN) {
-				data.at(addr) = new_data;
-				status.at(addr) = STATUS::FILLED;
-				if (DEBUG) std::cerr << "(+) inserted\n";
-			} else {
-				throw std::runtime_error("Table full? Did not insert.");
-			}
-		} catch (const std::exception &e) {
-			if (DEBUG) std::cerr << "(-) not inserted: " << e.what() << "\n";
-		}
+		//if we didn't return as a result of the above while loop, that means the table is full
+		if (DEBUG) std::cerr << "(-) not inserted: Table full\n"; std::cerr << "(*) loop counter: " << counter  << "\n";
 	}
-
+	
 	bool search(T key) {
 		size_t addr = hash(key) % SIZE;
 		size_t counter = 0;
