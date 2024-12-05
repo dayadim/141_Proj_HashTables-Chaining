@@ -105,15 +105,24 @@ public:
 	void print() {
 		std::cout << "Printing table:\n";
 		int counter = 0;
+		std::cout <<"| ";
 		for (size_t i = 0; i < SIZE; i++) {
 			std::cout << data.at(i) << " ";
-			std::cout << status.at(i) << ", ";
+			switch (status.at(i)) {
+				case STATUS::OPEN:
+					std::cout << "_ | ";
+					break;
+				case STATUS::FILLED:
+					std::cout << "X | ";
+					break;
+			}
 			counter++;
 			if (counter == 15) {
 				std::cout << "\n";
 				counter = 0;
 			}
 		}
+		std::cout << "\n";
 	}
 };
 
