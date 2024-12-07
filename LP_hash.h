@@ -75,7 +75,7 @@ public:
 			if (status.at(addr) == STATUS::FILLED) std::cerr << "status: FILLED" << "\n";
 		}
 
-		//so long as the current bucket isn't open, and we haven't searched the entire table
+		//so long as the current bucket is filled, and we haven't searched the entire table
 		while (status.at(addr) == STATUS::OPEN and counter <= SIZE) {
 			// display the value and the loop counter for debug
 			if (DEBUG) {
