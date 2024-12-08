@@ -34,18 +34,18 @@ public:
 	bool search(T key) {
 		size_t addr = hash(key) % SIZE;
 
-		// Access the linked list at the hashed address
-		Node<T>* current = data.at(addr).head; // Access the head node of the linked list
+		// access the linked list at the hashed address
+		Node<T>* current = data.at(addr).head; // access the head node of the linked list
 		while (current) {
-			// If the key matches an item in the list, return true
+			// if the key matches an item in the list, return true
 			if (current->data == key) {
 				if (DEBUG) std::cerr << "(+) found " << key << " at list at " << addr << "\n";
 				return true;
 			}
-			current = current->next; // Move to the next node
+			current = current->next; // move to the next node
 		}
 
-		// If the key is not found, return false
+		// if the key is not found, return false
 		if (DEBUG) std::cerr << "(-) not found " << key << " at list at " << addr << "\n";
 		return false;
 	}

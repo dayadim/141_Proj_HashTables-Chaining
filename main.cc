@@ -34,7 +34,7 @@ std::vector<HashDataType> gen_elements(int size, int seed) {
 void ll_chaining() {
 	cout << "==================== TIMING FOR LL CHAINING ====================" << endl;
 
-	vector<HashDataType> elements = gen_elements(size_, 141);
+	vector<HashDataType> elements = gen_elements(size_*10, 141);
 
 	Hash_LL<HashDataType, size_>* table = new Hash_LL<HashDataType, size_>;
 
