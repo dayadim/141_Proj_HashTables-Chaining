@@ -22,7 +22,7 @@ public:
 
 	// insert a new element if it doesn't already exist
 	void insert(T new_data) {
-		if (search(new_data)) return; // if it exists, do nothing
+		//if (search(new_data)) return; // if it exists, do nothing
 
 		Node<T>* newNode = new Node<T>(new_data);
 		newNode->next = head;
