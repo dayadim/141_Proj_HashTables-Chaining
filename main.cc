@@ -31,8 +31,8 @@ std::vector<HashDataType> gen_elements(int size, int seed) {
 	return vec;
 }
 
-void timing_LL_probing() {
-	cout << "==================== TIMING FOR LL PROBING ====================" << endl;
+void ll_chaining() {
+	cout << "==================== TIMING FOR LL CHAINING ====================" << endl;
 
 	vector<HashDataType> elements = gen_elements(size_, 141);
 
@@ -124,8 +124,8 @@ int main() {
 	cout << "Select an option:\n";
 	cout << "1. Linear probing timing\n";
 	cout << "2. Double hashing timing\n";
-	cout << "3. Linked list probing timing\n";
-	cout << "4. BST timing\n";
+	cout << "3. Linked list chaining timing\n";
+	cout << "4. BST chaining timing\n";
 	cout << "Enter your choice: ";
 	cin >> choice;
 	switch (choice) {
@@ -135,7 +135,7 @@ int main() {
 			cout << "Double hashing timing not implemented." << endl;
 			break;
 		case 3:
-			timing_LL_probing();
+			ll_chaining();
 			break;
 		case 4:
 			cout << "BST timing not implemented." << endl;
