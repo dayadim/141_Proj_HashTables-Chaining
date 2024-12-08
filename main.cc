@@ -8,6 +8,7 @@ using namespace chrono;
 
 //WE'RE USING UNSIGNED SHORT DATATYPE
 using HashDataType = unsigned short;
+const int size_ = 10000; // past 10000 (100000) stack overflow on amaan's machine
 
 /**
 * @brief generates a vector of a given size with random numbers.
@@ -30,26 +31,23 @@ std::vector<HashDataType> gen_elements(int size, int seed) {
 	return vec;
 }
 
-int main() {
-
+void timing_LL_probing() {
 	cout << "==================== TIMING FOR LL PROBING ====================" << endl;
 
-	const int size = 10000; // past 10000 (100000) stack overflow on amaan's machine
+	vector<HashDataType> elements = gen_elements(size_, 141);
 
-	vector<HashDataType> elements = gen_elements(size, 141);
-
-	Hash_LL<HashDataType, size>* table = new Hash_LL<HashDataType, size>;
+	Hash_LL<HashDataType, size_>* table = new Hash_LL<HashDataType, size_>;
 
 	// to store average timing results for each phase
 	vector<double> average_insert_timings;
 	vector<double> average_search_timings;
 
 	int capacity = 0;
-	int total_capacity = size * .4; // 40% capacity to insert after each section of timing
-	int time_increment = size / 10; // 10% capacity increments to time individually then avg
+	int total_capacity = size_ * .4; // 40% capacity to insert after each section of timing
+	int time_increment = size_ / 10; // 10% capacity increments to time individually then avg
 
 	// loop until we reach 1000% capacity
-	while (capacity < size * 10) {
+	while (capacity < size_ * 10) {
 		// insert 40% of elements. so each loop we've added 50% of elements
 		// 10% is being timed, but later on in the loop
 		int phase_end = capacity + total_capacity;
@@ -63,7 +61,7 @@ int main() {
 		// time how long it takes to search n times where n = # of elements * .1
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		std::uniform_int_distribution<int> dis(0, size - 1);
+		std::uniform_int_distribution<int> dis(0, size_ - 1);
 
 		auto search_start_time = high_resolution_clock::now();
 		for (int i = 0; i < time_increment; ++i) {
@@ -78,7 +76,7 @@ int main() {
 		average_search_timings.push_back(average_search_time);
 
 		cout << "("
-			<< ((capacity) * 100.0 / size) << "%): Average search time = "
+			<< ((capacity) * 100.0 / size_) << "%): Average search time = "
 			<< average_search_time << " ns/search.\n";
 
 		// time the next 10% capacity worth of inserts
@@ -97,8 +95,8 @@ int main() {
 		double average_insert_time = total_insert_duration / time_increment;
 		average_insert_timings.push_back(average_insert_time);
 
-		cout << "(" << (capacity * 100.0 / size) << "% to "
-			<< ((capacity + time_increment) * 100.0 / size) << "%): Average insert time = "
+		cout << "(" << (capacity * 100.0 / size_) << "% to "
+			<< ((capacity + time_increment) * 100.0 / size_) << "%): Average insert time = "
 			<< average_insert_time << " ns/insert.\n";
 
 		// Update capacity after timed inserts
@@ -119,6 +117,32 @@ int main() {
 	for (int i = 0; i < average_search_timings.size(); ++i) {
 		cout << average_search_timings[i] << "\n";
 	}
+}
 
+int main() {
+	int choice;
+	cout << "Select an option:\n";
+	cout << "1. Linear probing timing\n";
+	cout << "2. Double hashing timing\n";
+	cout << "3. Linked list probing timing\n";
+	cout << "4. BST timing\n";
+	cout << "Enter your choice: ";
+	cin >> choice;
+	switch (choice) {
+		case 1:
+			cout << "Linear probing timing not implemented." << endl;
+		case 2:
+			cout << "Double hashing timing not implemented." << endl;
+			break;
+		case 3:
+			timing_LL_probing();
+			break;
+		case 4:
+			cout << "BST timing not implemented." << endl;
+			break;
+		default:
+			cout << "Invalid choice" << endl;
+			break;
+	}
 	return 0;
 }
