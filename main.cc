@@ -1,28 +1,124 @@
 #include "hash.h"
 #include "LP_hash.h"
+#include "LL_hash.h"
+#include <random>
+#include <chrono>
 using namespace std;
+using namespace chrono;
+
+//WE'RE USING UNSIGNED SHORT DATATYPE
+using HashDataType = unsigned short;
+
+/**
+* @brief generates a vector of a given size with random numbers.
+*
+* @note If the same seed is used, the same vector is generated
+*
+* @param size the size of the vector to generate
+* @param seed the seed used for the random number generator
+*
+* @return a vector of size @p size with random numbers
+*/
+std::vector<HashDataType> gen_elements(int size, int seed) {
+	std::vector<HashDataType> vec;
+	std::mt19937 gen(seed); // std mersenne_twister_engine seeded with seed
+	std::uniform_int_distribution<HashDataType> dis(0, std::numeric_limits<HashDataType>::max());
+
+	for (int i = 0; i < size; i++) {
+		vec.push_back(dis(gen));
+	}
+	return vec;
+}
 
 int main() {
-	cout << "Testing linear probing." << endl;
 
-	//declare a table like this.
-	//1. make the hash table base as a pointer
-	//2. assign the table to the abstraction of the base class
-	//idfk
-	Hash<int, 11> *table;
-	table = new Hash_LinearProbing<int, 11>;
-	//fill table to max capacity
-	for (int i = 0; i < 11; i++) {
-		table->insert(i);
+	cout << "==================== TIMING FOR LL PROBING ====================" << endl;
+
+	const int size = 10000; // past 10000 (100000) stack overflow on amaan's machine
+
+	vector<HashDataType> elements = gen_elements(size, 141);
+
+	Hash_LL<HashDataType, size>* table = new Hash_LL<HashDataType, size>;
+
+	// to store average timing results for each phase
+	vector<double> average_insert_timings;
+	vector<double> average_search_timings;
+
+	int capacity = 0;
+	int total_capacity = size * .4; // 40% capacity to insert after each section of timing
+	int time_increment = size / 10; // 10% capacity increments to time individually then avg
+
+	// loop until we reach 1000% capacity
+	while (capacity < size * 10) {
+		// insert 40% of elements. so each loop we've added 50% of elements
+		// 10% is being timed, but later on in the loop
+		int phase_end = capacity + total_capacity;
+		for (int i = capacity; i < phase_end; ++i) {
+			table->insert(elements[i]);
+		}
+		capacity = phase_end;
+
+		//cout << "(*) Inserted up to " << (capacity * 100.0 / size) << "% capacity.\n";
+
+		// time how long it takes to search n times where n = # of elements * .1
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(0, size - 1);
+
+		auto search_start_time = high_resolution_clock::now();
+		for (int i = 0; i < time_increment; ++i) {
+			int random_index = dis(gen); // generate a random index
+			table->search(elements[random_index]); // perform search on a random element
+		}
+		auto search_end_time = high_resolution_clock::now();
+
+		// calculate and store the average time per search for this 10% increment
+		double total_search_duration = duration_cast<nanoseconds>(search_end_time - search_start_time).count();
+		double average_search_time = total_search_duration / time_increment;
+		average_search_timings.push_back(average_search_time);
+
+		cout << "("
+			<< ((capacity) * 100.0 / size) << "%): Average search time = "
+			<< average_search_time << " ns/search.\n";
+
+		// time the next 10% capacity worth of inserts
+		// we want to add on unadded elements to the table, so we start where we left off
+		int timed_insert_start = capacity;
+		int timed_insert_end = capacity + time_increment;
+
+		auto insert_start_time = high_resolution_clock::now();
+		for (int i = timed_insert_start; i < timed_insert_end; ++i) {
+			table->insert(elements[i]);
+		}
+		auto insert_end_time = high_resolution_clock::now();
+
+		//calculate and store the average time per insert for this 10% increment
+		double total_insert_duration = duration_cast<nanoseconds>(insert_end_time - insert_start_time).count();
+		double average_insert_time = total_insert_duration / time_increment;
+		average_insert_timings.push_back(average_insert_time);
+
+		cout << "(" << (capacity * 100.0 / size) << "% to "
+			<< ((capacity + time_increment) * 100.0 / size) << "%): Average insert time = "
+			<< average_insert_time << " ns/insert.\n";
+
+		// Update capacity after timed inserts
+		capacity += time_increment;
 	}
-	table->print();
 
-	//search for 1st, middle, last element
-	table->search(0);
-	table->search(5);
-	table->search(10);
+	// Clean up
+	delete table;
 
-	//try to insert another element
-	table->insert(11);
+	// Output the average timings for all phases
+	cout << "\nFinal Average Timings:\n";
+	cout << "Insertion (avg. ns/insert):\n";
+	for (int i = 0; i < average_insert_timings.size(); ++i) {
+		cout << average_insert_timings[i] << "\n";
+	}
+
+	cout << "\nSearch (avg. ns/search):\n";
+	for (int i = 0; i < average_search_timings.size(); ++i) {
+		cout << average_search_timings[i] << "\n";
+	}
+
 	return 0;
 }
