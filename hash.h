@@ -4,7 +4,7 @@
 #include "read.h"
 #include <vector>
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 //template. makes something of unspecified type T.
 //- e.g. usage: Hash<int, 100> for integers and size 100
