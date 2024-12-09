@@ -222,10 +222,8 @@ void ll_chaining() {
 int main() {
 	int choice;
 	cout << "Select an option:\n";
-	cout << "1. Linear probing timing\n";
-	cout << "2. Double hashing timing\n";
-	cout << "3. Linked list chaining timing\n";
-	cout << "4. BST chaining timing\n";
+	cout << "1. Linked list chaining timing\n";
+	cout << "2. BST chaining timing\n";
 	cout << "Enter your choice: ";
 	cin >> choice;
 	switch (choice) {
