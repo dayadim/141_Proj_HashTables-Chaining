@@ -7,6 +7,9 @@ using namespace std;
 using namespace chrono;
 
 //example commit new st uff
+//example commmit. assume you're ready to upload smt
+// save
+// stage.
 
 //WE'RE USING UNSIGNED SHORT DATATYPE
 using HashDataType = unsigned short;
