@@ -1,6 +1,7 @@
 #include "hash.h"
 #include "LP_hash.h"
 #include "LL_hash.h"
+#include "BST_hash.h"
 #include <random>
 #include <chrono>
 using namespace std;
@@ -225,11 +226,6 @@ void ll_chaining() {
 	}
 }
 
-void bst_chaining() {
-	cout << "==================== TIMING FOR BST CHAINING ====================" << endl;
-	
-	cerr << "Not implemented.\n";
-}
 
 int main() {
 	int choice;
@@ -251,7 +247,7 @@ int main() {
 			ll_chaining();
 			break;
 		case 4:
-			bst_chaining();
+			BST_chaining();
 			break;
 		default:
 			cout << "Invalid choice" << endl;
