@@ -1,6 +1,7 @@
 #include "hash.h"
 #include "LP_hash.h"
 #include "LL_hash.h"
+#include "2x_hash.h"
 #include "BST_hash.h"
 #include <random>
 #include <chrono>
@@ -37,8 +38,6 @@ std::vector<HashDataType> gen_elements(int size, int seed) {
 	return vec;
 }
 
-
-//TODO: 
 
 void BST_chaining() {
     cout << "==================== TIMING FOR BST CHAINING ====================" << endl;
@@ -214,7 +213,12 @@ void ll_chaining() {
 	}
 }
 
-
+/* void bst_cha vining() {
+	cout << "==================== TIMING FOR BST CHAINING ====================" << endl;
+	
+	cerr << "Not implemented.\n";
+} 
+*/
 int main() {
 	int choice;
 	cout << "Select an option:\n";
