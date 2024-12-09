@@ -5,60 +5,81 @@
 #include <memory>
 #include <iostream>
 
-// Binary Search Tree Node
+// Node structure for the Binary Search Tree
 template <class T>
 struct BSTNode {
     T data;
-    std::shared_ptr<BSTNode> left;
-    std::shared_ptr<BSTNode> right;
+    std::unique_ptr<BSTNode> left;
+    std::unique_ptr<BSTNode> right;
 
-    BSTNode(T val) : data(val), left(nullptr), right(nullptr) {}
+    BSTNode(T value) : data(value), left(nullptr), right(nullptr) {}
 };
 
-// Binary Search Tree Class
+// BST class
 template <class T>
 class BST {
-    std::shared_ptr<BSTNode<T>> root;
+public:
+    std::unique_ptr<BSTNode<T>> root;
 
-    void insertNode(std::shared_ptr<BSTNode<T>>& node, T val) {
-        if (!node) {
-            node = std::make_shared<BSTNode<T>>(val);
-        } else if (val < node->data) {
-            insertNode(node->left, val);
-        } else if (val > node->data) {
-            insertNode(node->right, val);
+    BST() : root(nullptr) {}
+
+    // Insert a new value into the BST
+    void insert(T value) {
+        root = insertNode(std::move(root), value);
+    }
+
+    // Search for a value in the BST
+    bool search(T value) {
+        return searchNode(root.get(), value);
+    }
+
+    // Print the BST in-order
+    void print() {
+        printInOrder(root.get());
+        std::cout << std::endl;
+    }
+
+private:
+    // Helper to insert a node into the BST
+    std::unique_ptr<BSTNode<T>> insertNode(std::unique_ptr<BSTNode<T>> node, T value) {
+        if (!node) return std::make_unique<BSTNode<T>>(value);
+
+        if (value < node->data) {
+            node->left = insertNode(std::move(node->left), value);
+        } else if (value > node->data) {
+            node->right = insertNode(std::move(node->right), value);
+        }
+        return node;
+    }
+
+    // Helper to search for a node in the BST
+    bool searchNode(BSTNode<T>* node, T value) {
+        if (!node) return false;
+        if (node->data == value) return true;
+
+        if (value < node->data) {
+            return searchNode(node->left.get(), value);
+        } else {
+            return searchNode(node->right.get(), value);
         }
     }
 
-    bool searchNode(std::shared_ptr<BSTNode<T>> node, T val) const {
-        if (!node) return false;
-        if (val == node->data) return true;
-        if (val < node->data) return searchNode(node->left, val);
-        return searchNode(node->right, val);
-    }
-
-    void printNode(std::shared_ptr<BSTNode<T>> node, int level = 0) const {
+    // Helper to print BST in-order
+    void printInOrder(BSTNode<T>* node) {
         if (!node) return;
-        printNode(node->right, level + 1);
-        std::cout << std::string(level * 4, ' ') << node->data << "\n";
-        printNode(node->left, level + 1);
+        printInOrder(node->left.get());
+        std::cout << node->data << " ";
+        printInOrder(node->right.get());
     }
-
-public:
-    BST() : root(nullptr) {}
-
-    void insert(T val) { insertNode(root, val); }
-
-    bool search(T val) const { return searchNode(root, val); }
-
-    void print() const { printNode(root); }
 };
 
-// Hash Table with BST chaining
+// Hash table with BST chaining
 template <class T, size_t SIZE>
 class Hash_BST : public Hash<T, SIZE> {
+private:
     std::vector<BST<T>> table;
 
+    // Hash function
     size_t hashFunction(T key) const {
         return std::hash<T>{}(key) % SIZE;
     }
@@ -66,53 +87,23 @@ class Hash_BST : public Hash<T, SIZE> {
 public:
     Hash_BST() : table(SIZE) {}
 
+    // Insert into the hash table
     void insert(T new_data) override {
         size_t index = hashFunction(new_data);
-        table.at(index).insert(new_data);
-        if (DEBUG) std::cerr << "(+) Inserted " << new_data << " into bucket " << index << "\n";
+        table[index].insert(new_data);
     }
 
+    // Search in the hash table
     bool search(T key) override {
         size_t index = hashFunction(key);
-        bool found = table.at(index).search(key);
-        if (DEBUG) std::cerr << "(?) Searching for " << key << " in bucket " << index << ": " << (found ? "Found" : "Not Found") << "\n";
-        return found;
+        return table[index].search(key);
     }
 
+    // Print the hash table
     void print() override {
-        std::cout << "Hash Table with BST Chaining:\n";
-        for (size_t i = 0; i < SIZE; i++) {
-            std::cout << "Bucket " << i << ":\n";
-            table.at(i).print();
-            std::cout << "\n";
+        for (size_t i = 0; i < SIZE; ++i) {
+            std::cout << "Bucket " << i << ": ";
+            table[i].print();
         }
     }
 };
-/*#pragma once
-
-#include "hash.h"
-
-// refer to the following files to figure out how to implement a hash table with BST chaining
-// - old_hash.h, near the lower part of the file. uses standard BST <set>, but we need to make our own
-// - hash.h.
-// - LP_hash.h, for how to understand this syntax and this STATUS stuff
-//		- but basically assume all datatypes are T, and use size_t for size etc.
-//		- in a BST, we probably don't need status. in collisions, first addr checked has the data,
-//			so you just add it to the bst and move on
-template <class T, size_t SIZE>
-class Hash_BST : public Hash<T, SIZE> {
-	enum class STATUS : char {OPEN, FILLED};
-
-public:
-	std::vector<T> data;
-	std::vector<STATUS> status;
-
-	Hash_BST() {}
-
-	void insert(T new_data) {}
-
-	bool search(T key) { return false; }
-
-	void print() {}
-};
-*/
