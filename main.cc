@@ -40,18 +40,6 @@ std::vector<HashDataType> gen_elements(int size, int seed) {
 
 //TODO: 
 
-void linear_probing() {
-	cout << "==================== TIMING FOR LINEAR PROBING ====================" << endl;
-	
-	cerr << "Not implemented.\n";
-}
-
-void double_hashing() {
-	cout << "==================== TIMING FOR DOUBLE HASHING ====================" << endl;
-	
-	cerr << "Not implemented.\n";
-}
-
 void BST_chaining() {
     cout << "==================== TIMING FOR BST CHAINING ====================" << endl;
 
@@ -238,15 +226,9 @@ int main() {
 	cin >> choice;
 	switch (choice) {
 		case 1:
-			linear_probing();
-			break;
-		case 2:
-			double_hashing();
-			break;
-		case 3:
 			ll_chaining();
 			break;
-		case 4:
+		case 2:
 			BST_chaining();
 			break;
 		default:
