@@ -51,6 +51,92 @@ void double_hashing() {
 	cerr << "Not implemented.\n";
 }
 
+void BST_chaining() {
+    cout << "==================== TIMING FOR BST CHAINING ====================" << endl;
+
+    vector<HashDataType> elements = gen_elements(size_ * 10, 141);
+
+    Hash_BST<HashDataType, size_>* table = new Hash_BST<HashDataType, size_>;
+
+    // To store average timing results for each phase
+    vector<double> average_insert_timings;
+    vector<double> average_search_timings;
+
+    int capacity = 0;
+    int total_capacity = size_ * .4; // 40% capacity to insert after each section of timing
+    int time_increment = size_ / 10; // 10% capacity increments to time individually then avg
+
+    // Loop until we reach 1000% capacity
+    while (capacity < size_ * 10) {
+        // Insert 40% of elements. Each loop we've added 50% of elements
+        // 10% is being timed, but later on in the loop
+        int phase_end = capacity + total_capacity;
+        for (int i = capacity; i < phase_end; ++i) {
+            table->insert(elements[i]);
+        }
+        capacity = phase_end;
+
+        // Time how long it takes to search n times where n = # of elements * .1
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(0, size_ - 1);
+
+        auto search_start_time = high_resolution_clock::now();
+        for (int i = 0; i < time_increment; ++i) {
+            int random_index = dis(gen); // Generate a random index
+            table->search(elements[random_index]); // Perform search on a random element
+        }
+        auto search_end_time = high_resolution_clock::now();
+
+        // Calculate and store the average time per search for this 10% increment
+        double total_search_duration = duration_cast<nanoseconds>(search_end_time - search_start_time).count();
+        double average_search_time = total_search_duration / time_increment;
+        average_search_timings.push_back(average_search_time);
+
+        cout << "("
+             << ((capacity) * 100.0 / size_) << "%): Average search time = "
+             << average_search_time << " ns/search.\n";
+
+        // Time the next 10% capacity worth of inserts
+        // Start where we left off
+        int timed_insert_start = capacity;
+        int timed_insert_end = capacity + time_increment;
+
+        auto insert_start_time = high_resolution_clock::now();
+        for (int i = timed_insert_start; i < timed_insert_end; ++i) {
+            table->insert(elements[i]);
+        }
+        auto insert_end_time = high_resolution_clock::now();
+
+        // Calculate and store the average time per insert for this 10% increment
+        double total_insert_duration = duration_cast<nanoseconds>(insert_end_time - insert_start_time).count();
+        double average_insert_time = total_insert_duration / time_increment;
+        average_insert_timings.push_back(average_insert_time);
+
+        cout << "(" << (capacity * 100.0 / size_) << "% to "
+             << ((capacity + time_increment) * 100.0 / size_) << "%): Average insert time = "
+             << average_insert_time << " ns/insert.\n";
+
+        // Update capacity after timed inserts
+        capacity += time_increment;
+    }
+
+    // Clean up
+    delete table;
+
+    // Output the average timings for all phases
+    cout << "\nFinal Average Timings:\n";
+    cout << "Insertion (avg. ns/insert):\n";
+    for (int i = 0; i < average_insert_timings.size(); ++i) {
+        cout << average_insert_timings[i] << "\n";
+    }
+
+    cout << "\nSearch (avg. ns/search):\n";
+    for (int i = 0; i < average_search_timings.size(); ++i) {
+        cout << average_search_timings[i] << "\n";
+    }
+}
+
 void ll_chaining() {
 	cout << "==================== TIMING FOR LL CHAINING ====================" << endl;
 
