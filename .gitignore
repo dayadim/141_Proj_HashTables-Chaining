@@ -33,3 +33,6 @@
 
 # Ignore VSCode settings
 .vscode/
+
+# zips
+*.zip
